@@ -1,8 +1,13 @@
-# Fixed Width
+# Fixed Width &emsp; [![Build Status]][travis] [![Latest Version]][crates.io]
 
-[![Build Status](https://travis-ci.org/twking7/fixed_width.svg?branch=master)](https://travis-ci.org/twking7/fixed_width)
+[Build Status]: https://travis-ci.org/twking7/fixed_width.svg?branch=master
+[travis]: https://travis-ci.org/twking7/fixed_width
+[Latest Version]: https://img.shields.io/badge/crates.io-0.4.0-blue.svg
+[crates.io]: https://docs.rs/fixed_width
 
-A fixed width data reader and writer library. Also supports [Serde](https://github.com/serde-rs/serde)
+A fixed width data reader and writer library. Also supports [Serde](https://github.com/serde-rs/serde).
+
+Fixed width in this case means that each line of the file is the same number of bytes. It supports unicode, but only if the unicode fits in the designated byte size of the record.
 
 ## Documentation
 
@@ -14,10 +19,10 @@ Add as a dependency:
 
 ```toml
 [dependencies]
-fixed_width = "0.3"
+fixed_width = "0.4"
 
 # Optionally, if you are running Rust version 1.30.0 or above and want to derive fixed width field definitions:
-fixed_width_derive = "0.3"
+fixed_width_derive = "0.4"
 ```
 
 in the root of your crate:
