@@ -1,5 +1,9 @@
-use std::{fs, io::{self, Read}, path::Path};
 use crate::{error::Error, LineBreak, Result};
+use std::{
+    fs,
+    io::{self, Read},
+    path::Path,
+};
 
 const BUFFER_SIZE: usize = 8 * (1 << 10);
 
@@ -26,7 +30,7 @@ pub struct StringReader<'a, R: 'a> {
 /// ```rust
 /// use serde_derive::Deserialize;
 /// use serde;
-/// use fixed_width::{Field, FixedWidth, Reader};
+/// use fixed_width::{FieldSet, FixedWidth, Reader};
 /// use serde::Deserialize;
 /// use std::result;
 ///
@@ -38,24 +42,22 @@ pub struct StringReader<'a, R: 'a> {
 ///
 /// // can be derived using the `fixed_width_derive` crate.
 /// impl FixedWidth for Foo {
-///     fn fields() -> Vec<Field> {
-///         vec![
-///             Field::default().range(0..6),
-///             Field::default().range(6..10),
-///         ]
+///     fn fields() -> FieldSet {
+///         FieldSet::Seq(vec![
+///             FieldSet::new_field(0..6),
+///             FieldSet::new_field(6..10),
+///         ])
 ///     }
 /// }
 ///
-/// fn main() {
-///     let data = "foobar1234foobaz6789";
-///     let mut reader = Reader::from_string(data).width(10);
+/// let data = "foobar1234foobaz6789";
+/// let mut reader = Reader::from_string(data).width(10);
 ///
-///     for row in reader.byte_reader().filter_map(result::Result::ok) {
-///         let record: Foo = fixed_width::from_bytes(&row).unwrap();
+/// for row in reader.byte_reader().filter_map(result::Result::ok) {
+///     let record: Foo = fixed_width::from_bytes(&row).unwrap();
 ///
-///         println!("{}", record.name);
-///         println!("{}", record.age);
-///     }
+///     println!("{}", record.name);
+///     println!("{}", record.age);
 /// }
 /// ```
 ///
@@ -65,27 +67,25 @@ pub struct StringReader<'a, R: 'a> {
 ///
 /// ```rust
 /// use serde;
-/// use fixed_width::{Field, FixedWidth, Deserializer, Reader};
+/// use fixed_width::{FieldSet, FixedWidth, Deserializer, Reader};
 /// use std::collections::HashMap;
 /// use serde::Deserialize;
 ///
-/// fn main() {
-///     let data = "foobar1234foobaz6789";
-///     let mut reader = Reader::from_string(data).width(10);
-///     let fields = vec![
-///         Field::default().range(0..6).name(Some("name")),
-///         Field::default().range(6..10).name(Some("age")),
-///     ];
+///  let data = "foobar1234foobaz6789";
+///  let mut reader = Reader::from_string(data).width(10);
+///  let fields = FieldSet::Seq(vec![
+///      FieldSet::new_field(0..6).name("name"),
+///      FieldSet::new_field(6..10).name("age"),
+///  ]);
 ///
-///     for row in reader.byte_reader() {
-///         let bytes = row.unwrap();
-///         let mut de = Deserializer::new(&bytes, fields.clone());
-///         let record: HashMap<String, String> = HashMap::deserialize(&mut de).unwrap();
+///  for row in reader.byte_reader() {
+///      let bytes = row.unwrap();
+///      let mut de = Deserializer::new(&bytes, fields.clone());
+///      let record: HashMap<String, String> = HashMap::deserialize(&mut de).unwrap();
 ///
-///         println!("{}", record.get("name").unwrap());
-///         println!("{}", record.get("age").unwrap());
-///     }
-/// }
+///      println!("{}", record.get("name").unwrap());
+///      println!("{}", record.get("age").unwrap());
+///  }
 /// ```
 ///
 /// ### Example
@@ -401,11 +401,12 @@ where
 }
 
 #[cfg(test)]
+#[allow(dead_code)]
 mod test {
     use super::*;
+    use crate::{FieldSet, FixedWidth};
     use serde_derive::Deserialize;
     use std::result;
-    use crate::{Field, FixedWidth};
 
     #[test]
     fn read_next_record() {
@@ -514,7 +515,7 @@ mod test {
         }
     }
 
-    #[derive(Debug, Deserialize)]
+    #[derive(Deserialize)]
     struct Test {
         a: String,
         b: String,
@@ -522,12 +523,12 @@ mod test {
     }
 
     impl FixedWidth for Test {
-        fn fields() -> Vec<Field> {
-            vec![
-                Field::default().range(0..4),
-                Field::default().range(4..8),
-                Field::default().range(8..16),
-            ]
+        fn fields() -> FieldSet {
+            FieldSet::Seq(vec![
+                FieldSet::new_field(0..4),
+                FieldSet::new_field(4..8),
+                FieldSet::new_field(8..16),
+            ])
         }
     }
 
