@@ -220,7 +220,7 @@ mod test {
 
     #[test]
     fn write_to_memory() {
-        let records = vec![
+        let records = [
             "1111222233334444".to_string(),
             "1111222233334444".to_string(),
             "1111222233334444".to_string(),
@@ -240,7 +240,7 @@ mod test {
     #[test]
     fn write_to_writer() {
         let v = vec![16; 0];
-        let records = vec![
+        let records = [
             "1111222233334444".to_string(),
             "1111222233334444".to_string(),
             "1111222233334444".to_string(),
@@ -297,9 +297,10 @@ mod test {
     fn test_write() {
         let bytes = b"abcd1234";
         let mut w = Writer::from_memory();
-        w.write(bytes).unwrap();
+        let written = w.write(bytes).unwrap();
         let s: String = w.into();
 
+        assert!(written > 0);
         assert_eq!(s, "abcd1234");
     }
 }

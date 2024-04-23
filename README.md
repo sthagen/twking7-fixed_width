@@ -1,8 +1,7 @@
-# Fixed Width &emsp; [![Build Status]][travis] [![Latest Version]][crates.io] [![Documents]][docs.rs]
+# Fixed Width &emsp; ![Build Status] [![Latest Version]][crates.io] [![Documents]][docs.rs]
 
-[Build Status]: https://travis-ci.org/twking7/fixed_width.svg?branch=master
-[travis]: https://travis-ci.org/twking7/fixed_width
-[Latest Version]: https://img.shields.io/badge/crates.io-0.5.1-blue.svg
+[Build Status]: https://github.com/twking7/fixed_width/actions/workflows/rust.yml/badge.svg
+[Latest Version]: https://img.shields.io/badge/crates.io-0.6.0-blue.svg
 [crates.io]: https://crates.io/crates/fixed_width
 [Documents]: https://img.shields.io/docsrs/fixed_width/latest
 [docs.rs]: https://docs.rs/fixed_width
@@ -21,10 +20,10 @@ Add as a dependency:
 
 ```toml
 [dependencies]
-fixed_width = "0.5"
+fixed_width = "0.6"
 
 # Optionally, if you are running Rust version 1.30.0 or above and want to derive fixed width field definitions:
-fixed_width_derive = "0.5"
+fixed_width_derive = "0.6"
 ```
 
 in the root of your crate:
@@ -120,6 +119,21 @@ while let Some(Ok(bytes)) = reader.next_record() {
         None => {}
     }
 }
+```
+
+Read data from a file:
+
+```rust
+use fixed_width::Reader;
+use std::fs;
+
+// from a file path on disk
+let filepath = "/path/to/file.txt";
+let mut reader = Reader::from_file(filepath)?.width(5);
+
+// from a file handle
+let file = fs::File::open(filepath)?;
+let mut reader = Reader::from_reader(file).width(5);
 ```
 
 ## License
